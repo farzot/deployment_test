@@ -1,4 +1,4 @@
-name: CI/CD Deployment
+name: CI and Deploy to Server
 
 on:
   push:
@@ -6,48 +6,34 @@ on:
       - master
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    - name: Checkout repository
+      uses: actions/checkout@v3
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install sshpass -y
-          
-      - name: Deploy to server
-        run: |
-          sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} << 'EOF'
-            # Katalog mavjudligini tekshirish va kerak bo'lsa yaratish
-            if [ ! -d "/root/projects/test_deployment" ]; then
-              mkdir -p /root/projects/test_deployment
-              git clone https://github.com/farzot/deployment_test.git /root/projects/test_deployment
-            fi
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.10.0'
 
-            cd /root/projects/test_deployment
+    - name: Install dependencies
+      run: npm install
 
-            # Git repositorydan kodni yangilash
-            if [ -d ".git" ]; then
-              git pull
-            fi
+    - name: Build project
+      run: npm run build
 
-            # package.json borligini tekshirish
-            if [ -f "package.json" ]; then
-              npm install
-              npm run build
-            else
-              echo "package.json topilmadi!"
-              exit 1
-            fi
-
-            # PM2 ni o'rnatish va ishga tushirish
-            if ! command -v pm2 &> /dev/null; then
-              npm install -g pm2
-            fi
-
-            pm2 reload test_deployment || pm2 start dist/main.js --name "test_deployment"
-            pm2 save
-          EOF
+    - name: Deploy to development server
+      if: github.ref == 'refs/heads/master'
+      run: |
+        sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} << 'EOF'
+          mkdir -p /root/projects/ci_cd_dep_test
+          cd /root/projects/ci_cd_dep_test
+          git init
+          git pull https://github.com/farzot/deployment_test.git
+          npm install
+          npm run build
+          pm2 reload ci_cd_deployment  pm2 start dist/main.js --name "ci_cd_deployment"
+          pm2 save
+        EOF
