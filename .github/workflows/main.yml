@@ -16,7 +16,7 @@ jobs:
     - name: Set up Node.js
       uses: actions/setup-node@v3
       with:
-        node-version: '20.10.0'
+        node-version: '16.19.0'
 
     - name: Install dependencies
       run: npm install
@@ -34,7 +34,6 @@ jobs:
           git remote add origin https://github.com/farzot/deployment_test.git
           git pull origin master
           npm install
-          npm use 20.10.0
           npm run build
           pm2 reload ci_cd_deployment  pm2 start dist/main.js --name "ci_cd_deployment"
           pm2 save
