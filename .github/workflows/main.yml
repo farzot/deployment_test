@@ -34,6 +34,7 @@ jobs:
           git remote add origin https://github.com/farzot/deployment_test.git
           git pull origin master
           npm install
+          npm use 20.10.0
           npm run build
           pm2 reload ci_cd_deployment  pm2 start dist/main.js --name "ci_cd_deployment"
           pm2 save
