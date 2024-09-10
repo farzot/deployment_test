@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: 20.04.4
 
     steps:
     - name: Checkout repository
@@ -30,11 +30,15 @@ jobs:
         sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} << 'EOF'
           mkdir -p /root/projects/ci_cd_dep_test
           cd /root/projects/ci_cd_dep_test
-          git init
-          git remote add origin https://github.com/farzot/deployment_test.git
-          git pull origin master
+          if [ ! -d ".git" ]; then
+              git init
+              git remote add origin https://github.com/farzot/deployment_test.git
+              git pull origin master
+          else
+              git pull origin master
+          fi
           npm install
           npm run build
-          pm2 reload ci_cd_deployment  pm2 start dist/main.js --name "ci_cd_deployment"
+          pm2 restart ci_cd_test  pm2 start npm —name="ci_cd_test" — run start
           pm2 save
         EOF
