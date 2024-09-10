@@ -31,7 +31,8 @@ jobs:
           mkdir -p /root/projects/ci_cd_dep_test
           cd /root/projects/ci_cd_dep_test
           git init
-          git pull https://github.com/farzot/deployment_test.git
+          git remote add origin https://github.com/farzot/deployment_test.git
+          git pull origin master
           npm install
           npm run build
           pm2 reload ci_cd_deployment  pm2 start dist/main.js --name "ci_cd_deployment"
