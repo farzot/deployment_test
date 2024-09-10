@@ -1,0 +1,40 @@
+name: CI and Deploy to Server
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '20.10.0'
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Build project
+      run: npm run build
+
+    - name: Deploy to development server
+      if: github.ref == 'refs/heads/master'
+      run: |
+        sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} << 'EOF'
+          mkdir -p /root/projects/ci_cd_dep_test
+          cd /root/projects/ci_cd_dep_test
+          git init
+          git remote add origin https://github.com/farzot/deployment_test.git
+          git pull origin master
+          npm install
+          npm run build
+          pm2 reload ci_cd_deployment  pm2 start dist/main.js --name "ci_cd_deployment"
+          pm2 save
+        EOF
