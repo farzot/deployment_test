@@ -21,6 +21,7 @@ jobs:
       - name: Deploy to server
         run: |
           sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} << 'EOF'
+            mkdir -p /root/projects/test_deployment
             cd /root/projects/test_deployment
             git pull https://github.com/farzot/deployment_test.git
             npm install
