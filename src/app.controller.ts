@@ -14,4 +14,9 @@ export class AppController {
   getBye(): string {
     return "bye Najim";
   }
+
+  @Get("Contact")
+  getContact(): string {
+    return "Contact Najim: 0123456789";
+  }
 }
