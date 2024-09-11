@@ -29,9 +29,9 @@ jobs:
       run: |
         sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} << 'EOF'
           # NVM o'rnatish va kerakli Node.js versiyasini tanlash
-          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
-          source ~/.nvm/nvm.sh
-          nvm install 20.10.0
+          # curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+          # source ~/.nvm/nvm.sh
+          # nvm install 20.10.0
           nvm use 20.10.0
           
           # pm2 ni o'rnatish
