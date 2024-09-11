@@ -13,21 +13,28 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v3
 
-    - name: Set up Node.js
+    - name: Set up Node.js (local runner)
       uses: actions/setup-node@v3
       with:
-        node-version: '16.19.0'
+        node-version: '20.10.0'
 
-    - name: Install dependencies
+    - name: Install dependencies (local runner)
       run: npm install
 
-    - name: Build project
+    - name: Build project (local runner)
       run: npm run build
 
     - name: Deploy to development server
       if: github.ref == 'refs/heads/master'
       run: |
         sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} << 'EOF'
+          # NVM o'rnatish va kerakli Node.js versiyasini tanlash
+          curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+          source ~/.nvm/nvm.sh
+          nvm install 20.10.0
+          nvm use 20.10.0
+          
+          # Loyihaning joylashuvini yaratish va loyihani olish
           mkdir -p /root/projects/ci_cd_dep_test
           cd /root/projects/ci_cd_dep_test
           if [ ! -d ".git" ]; then
@@ -37,8 +44,12 @@ jobs:
           else
               git pull origin master
           fi
+
+          # Kerakli kutubxonalarni o'rnatish va loyihani build qilish
           npm install
           npm run build
-          pm2 restart ci_cd_test  pm2 start npm —name="ci_cd_test" — run start
+          
+          # PM2 orqali jarayonlarni boshqarish
+          pm2 restart ci_cd_test || pm2 start npm --name="ci_cd_test" -- run start
           pm2 save
         EOF
