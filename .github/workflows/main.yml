@@ -34,6 +34,9 @@ jobs:
           nvm install 20.10.0
           nvm use 20.10.0
           
+          # pm2 ni o'rnatish
+          npm install -g pm2
+          
           # Loyihaning joylashuvini yaratish va loyihani olish
           mkdir -p /root/projects/ci_cd_dep_test
           cd /root/projects/ci_cd_dep_test
