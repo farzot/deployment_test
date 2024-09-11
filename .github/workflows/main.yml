@@ -28,25 +28,28 @@ jobs:
       if: github.ref == 'refs/heads/master'
       run: |
         sshpass -p ${{ secrets.SERVER_PASSWORD }} ssh -o StrictHostKeyChecking=no root@${{ secrets.SERVER_IP }} << 'EOF'
-          # NVM o'rnatish va kerakli Node.js versiyasini tanlash
-          # curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
-          # source ~/.nvm/nvm.sh
-          # nvm install 20.10.0
+          # NVM o'rnatilganligini tekshirish va kerakli Node.js versiyasini tanlash
+          if [ ! -d "$HOME/.nvm" ]; then
+            curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
+            source ~/.nvm/nvm.sh
+          else
+            source ~/.nvm/nvm.sh
+          fi
+          nvm install 20.10.0
           nvm use 20.10.0
           
-          # pm2 ni o'rnatish
-          npm install -g pm2
+          # PM2 o'rnatilganligini tekshirish
+          if ! command -v pm2 &> /dev/null; then
+            npm install -g pm2
+          fi
           
           # Loyihaning joylashuvini yaratish va loyihani olish
           mkdir -p /root/projects/ci_cd_dep_test
           cd /root/projects/ci_cd_dep_test
           if [ ! -d ".git" ]; then
-              git init
-              git remote add origin https://github.com/farzot/deployment_test.git
-              git pull origin master
-          else
-              git pull origin master
+              git clone https://github.com/farzot/deployment_test.git .
           fi
+          git pull origin master
 
           # Kerakli kutubxonalarni o'rnatish va loyihani build qilish
           npm install
