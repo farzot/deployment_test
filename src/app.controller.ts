@@ -19,4 +19,9 @@ export class AppController {
   getContact(): string {
     return "Contact Najim: 0123456789";
   }
+
+  @Get("ci_cd")
+  ciCd(): string {
+    return "CI/CD has been implemented successfully!";
+  }
 }
