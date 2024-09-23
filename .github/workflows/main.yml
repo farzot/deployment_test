@@ -47,8 +47,8 @@ jobs:
           # fi
 
           # Loyihaning joylashuvini yaratish va loyihani olish
-          mkdir -p /root/projects/ci_cd_dep_test
-          cd /root/projects/ci_cd_dep_test
+          mkdir -p /projects/ci_cd_dep_test
+          cd /projects/ci_cd_dep_test
           if [ ! -d ".git" ]; then
               git clone https://github.com/farzot/${{ secrets.REPO_NAME }}.git .
           fi
