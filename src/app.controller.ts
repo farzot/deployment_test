@@ -24,4 +24,9 @@ export class AppController {
   ciCd(): string {
     return "CI/CD has been implemented successfully!";
   }
+
+  @Get("/all")
+  getAll(): string {
+    return "Get all api is working!";
+  }
 }
