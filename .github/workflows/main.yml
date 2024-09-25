@@ -32,6 +32,7 @@ jobs:
         username: root
         password: ${{ secrets.SERVER_PASSWORD }}
         script: |
+          nvm use v20.12.2
           # Loyihaning joylashuvini yaratish va loyihani olish
           mkdir -p /projects/ci_cd_dep_test
           cd /projects/ci_cd_dep_test
